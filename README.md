@@ -1,0 +1,1 @@
+[![CircleCI](https://circleci.com/gh/bperquku/spring5-mongo-recipe-app.svg?style=svg)](https://circleci.com/gh/bperquku/spring5-mongo-recipe-app)
