@@ -6,7 +6,6 @@ import guru.springframework.repositories.RecipeRepository;
 import guru.springframework.repositories.UnitOfMeasureRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
-import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +17,6 @@ import java.util.Optional;
 
 @Slf4j
 @Component
-@Profile("default")
 public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEvent> {
 
   private final CategoryRepository categoryRepository;
@@ -37,10 +35,62 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
   @Override
   @Transactional
   public void onApplicationEvent(ContextRefreshedEvent event) {
-    if ( recipeRepository.count() == 0) {
+    loadCategories();
+    loadUom();
     recipeRepository.saveAll(getRecipes());
     log.debug("Loading Bootstrap Data");
-    }
+  }
+
+  private void loadCategories() {
+    Category cat1 = new Category();
+    cat1.setDescription("American");
+    categoryRepository.save(cat1);
+
+    Category cat2 = new Category();
+    cat2.setDescription("Italian");
+    categoryRepository.save(cat2);
+
+    Category cat3 = new Category();
+    cat3.setDescription("Mexican");
+    categoryRepository.save(cat3);
+
+    Category cat4 = new Category();
+    cat4.setDescription("Fast Food");
+    categoryRepository.save(cat4);
+  }
+
+  private void loadUom() {
+    UnitOfMeasure uom1 = new UnitOfMeasure();
+    uom1.setDescription("Teaspoon");
+    unitOfMeasureRepository.save(uom1);
+
+    UnitOfMeasure uom2 = new UnitOfMeasure();
+    uom2.setDescription("Tablespoon");
+    unitOfMeasureRepository.save(uom2);
+
+    UnitOfMeasure uom3 = new UnitOfMeasure();
+    uom3.setDescription("Cup");
+    unitOfMeasureRepository.save(uom3);
+
+    UnitOfMeasure uom4 = new UnitOfMeasure();
+    uom4.setDescription("Pinch");
+    unitOfMeasureRepository.save(uom4);
+
+    UnitOfMeasure uom5 = new UnitOfMeasure();
+    uom5.setDescription("Ounce");
+    unitOfMeasureRepository.save(uom5);
+
+    UnitOfMeasure uom6 = new UnitOfMeasure();
+    uom6.setDescription("Each");
+    unitOfMeasureRepository.save(uom6);
+
+    UnitOfMeasure uom7 = new UnitOfMeasure();
+    uom7.setDescription("Pint");
+    unitOfMeasureRepository.save(uom7);
+
+    UnitOfMeasure uom8 = new UnitOfMeasure();
+    uom8.setDescription("Dash");
+    unitOfMeasureRepository.save(uom8);
   }
 
   private List<Recipe> getRecipes() {
@@ -195,7 +245,7 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
     tacoNotes.setRecipeNotes(
         "We have a family motto and it is this: Everything goes better in a tortilla.\n"
             + "Any and every kind of leftover can go inside a warm tortilla, usually with a healthy dose of pickled jalapenos. I can always sniff out a late-night snacker when the aroma of tortillas heating in a hot pan on the stove comes wafting through the house.\n"
-            + "Todayâ€™s tacos are more purposeful â€“ a deliberate meal instead of a secretive midnight snack!\n"
+            + "Today’s tacos are more purposeful – a deliberate meal instead of a secretive midnight snack!\n"
             + "First, I marinate the chicken briefly in a spicy paste of ancho chile powder, oregano, cumin, and sweet orange juice while the grill is heating. You can also use this time to prepare the taco toppings.\n"
             + "Grill the chicken, then let it rest while you warm the tortillas. Now you are ready to assemble the tacos and dig in. The whole meal comes together in about 30 minutes!\n"
             + "\n"
