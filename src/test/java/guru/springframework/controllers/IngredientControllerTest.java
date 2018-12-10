@@ -98,8 +98,8 @@ public class IngredientControllerTest {
   public void testSaveOrUpdate() throws Exception {
     // given
     IngredientCommand command = new IngredientCommand();
-    command.setId("3L");
-    command.setRecipeId("2L");
+    command.setId("3");
+    command.setRecipeId("2");
 
     // when
     when(ingredientService.saveIngredientCommand(any())).thenReturn(command);
@@ -119,7 +119,7 @@ public class IngredientControllerTest {
   public void testNewIngredientForm() throws Exception {
     // given
     RecipeCommand recipeCommand = new RecipeCommand();
-    recipeCommand.setId("1L");
+    recipeCommand.setId("1");
 
     // when
     mockMvc
