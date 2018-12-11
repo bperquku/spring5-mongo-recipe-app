@@ -19,50 +19,62 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class RecipeServiceImpl implements RecipeService {
 
-	private final RecipeRepository recipeRepository;
-	private final RecipeCommandToRecipe recipeCommandToRecipe;
-	private final RecipeToRecipeCommand recipeToRecipeCommand;
+  private final RecipeRepository recipeRepository;
+  private final RecipeCommandToRecipe recipeCommandToRecipe;
+  private final RecipeToRecipeCommand recipeToRecipeCommand;
 
-	public RecipeServiceImpl(RecipeRepository recipeRepository, RecipeCommandToRecipe recipeCommandToRecipe,
-			RecipeToRecipeCommand recipeToRecipeCommand) {
-		this.recipeRepository = recipeRepository;
-		this.recipeCommandToRecipe = recipeCommandToRecipe;
-		this.recipeToRecipeCommand = recipeToRecipeCommand;
-	}
+  public RecipeServiceImpl(
+      RecipeRepository recipeRepository,
+      RecipeCommandToRecipe recipeCommandToRecipe,
+      RecipeToRecipeCommand recipeToRecipeCommand) {
+    this.recipeRepository = recipeRepository;
+    this.recipeCommandToRecipe = recipeCommandToRecipe;
+    this.recipeToRecipeCommand = recipeToRecipeCommand;
+  }
 
-	@Override
-	public Set<Recipe> getRecipes() {
-		log.debug("I'm in the service");
-		Set<Recipe> recipeSet = new HashSet<>();
-		recipeRepository.findAll().iterator().forEachRemaining(recipeSet::add);
-		return recipeSet;
-	}
+  @Override
+  public Set<Recipe> getRecipes() {
+    log.debug("I'm in the service");
+    Set<Recipe> recipeSet = new HashSet<>();
+    recipeRepository.findAll().iterator().forEachRemaining(recipeSet::add);
+    return recipeSet;
+  }
 
-	public Recipe findById(String l) {
-		Optional<Recipe> recipeOptional = recipeRepository.findById(l);
+  public Recipe findById(String l) {
+    Optional<Recipe> recipeOptional = recipeRepository.findById(l);
 
-		if (!recipeOptional.isPresent())
-			throw new NotFoundException("Recipe not found! For ID value: "+l.toString());
-		return recipeOptional.get();
-	}
+    if (!recipeOptional.isPresent())
+      throw new NotFoundException("Recipe not found! For ID value: " + l.toString());
+    return recipeOptional.get();
+  }
 
-	@Override
-	@Transactional
-	public RecipeCommand saveRecipeCommand(RecipeCommand command) {
-		Recipe detachedRecipe = recipeCommandToRecipe.convert(command);
+  @Override
+  @Transactional
+  public RecipeCommand saveRecipeCommand(RecipeCommand command) {
+    Recipe detachedRecipe = recipeCommandToRecipe.convert(command);
 
-		Recipe saveRecipe = recipeRepository.save(detachedRecipe);
-		log.debug("Saved RecipeId:" + saveRecipe.getId());
-		return recipeToRecipeCommand.convert(saveRecipe);
-	}
+    Recipe saveRecipe = recipeRepository.save(detachedRecipe);
+    log.debug("Saved RecipeId:" + saveRecipe.getId());
+    return recipeToRecipeCommand.convert(saveRecipe);
+  }
 
-	@Override
-	public RecipeCommand findCommandById(String l) {
-		return recipeToRecipeCommand.convert(findById(l));
-	}
+  @Override
+  public RecipeCommand findCommandById(String id) {
+    RecipeCommand recipeCommand = recipeToRecipeCommand.convert(findById(id));
+    // enhance command object with id value
+    if (recipeCommand.getIngredients() != null && recipeCommand.getIngredients().size() > 0) {
+      recipeCommand
+          .getIngredients()
+          .forEach(
+              rc -> {
+                rc.setRecipeId(recipeCommand.getId());
+              });
+    }
+    return recipeCommand;
+  }
 
-	@Override
-	public void deleteById(String id) {
-		recipeRepository.deleteById(id);
-	}
+  @Override
+  public void deleteById(String id) {
+    recipeRepository.deleteById(id);
+  }
 }
