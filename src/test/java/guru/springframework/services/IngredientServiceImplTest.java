@@ -17,7 +17,7 @@ import org.mockito.MockitoAnnotations;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 public class IngredientServiceImplTest {
@@ -77,12 +77,10 @@ public class IngredientServiceImplTest {
     when(recipeRepository.findById(anyString())).thenReturn(recipeOptional);
 
     // then
-    IngredientCommand ingredientCommand =
-        ingredientService.findByRecipeIdAndIngredientId("1", "3");
+    IngredientCommand ingredientCommand = ingredientService.findByRecipeIdAndIngredientId("1", "3");
 
     // when
     assertEquals("3", ingredientCommand.getId());
-    assertEquals("1", ingredientCommand.getRecipeId());
     verify(recipeRepository, times(1)).findById(anyString());
   }
 
@@ -113,18 +111,19 @@ public class IngredientServiceImplTest {
 
   @Test
   public void testDeleteById() throws Exception {
+    // given
     Recipe recipe = new Recipe();
     Ingredient ingredient = new Ingredient();
     ingredient.setId("3");
     recipe.addIngredient(ingredient);
-    ingredient.setRecipe(recipe);
-
     Optional<Recipe> recipeOptional = Optional.of(recipe);
+
     when(recipeRepository.findById(anyString())).thenReturn(recipeOptional);
 
     // when
     ingredientService.deleteById("1", "3");
 
+    // then
     verify(recipeRepository, times(1)).findById(anyString());
     verify(recipeRepository, times(1)).save(any(Recipe.class));
   }
